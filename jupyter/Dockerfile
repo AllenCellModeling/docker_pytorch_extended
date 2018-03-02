@@ -41,6 +41,7 @@ RUN pip install pillow-simd
 # add pytorch learning tools
 RUN git clone https://github.com/AllenCellModeling/pytorch_learning_tools.git /opt/pytorch_learning_tools && \
     cd /opt/pytorch_learning_tools && \
+    git checkout dataframeDP && \
     pip install -e .
 
 ## Now set up jupyter
@@ -60,6 +61,9 @@ RUN pip install https://github.com/ipython-contrib/jupyter_contrib_nbextensions/
 RUN jupyter nbextension install https://github.com/lambdalisue/jupyter-vim-binding/archive/master.tar.gz --system && \
     mkdir -p /root/.jupyter/custom
 COPY custom.js /root/.jupyter/custom
+
+# set matplitlib backend
+RUN mkdir -p /root/.config/matplotlib/ && echo 'backend : agg' > /root/.config/matplotlib/matplotlibrc
 
 # expose port for ipython (9999)
 EXPOSE 9999

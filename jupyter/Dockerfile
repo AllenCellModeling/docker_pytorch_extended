@@ -5,8 +5,6 @@ FROM rorydm/pytorch:master
 #   ubuntu: build-essential cmake git curl vim ca-certificates libjpeg-dev libpng-dev
 #   python: numpy pyyaml scipy ipython mkl
 
-## first we augment python with more libraries
-
 # install more python stuff
 RUN /opt/conda/bin/conda install -c conda-forge -y \
     jupyter \

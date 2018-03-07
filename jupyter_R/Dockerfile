@@ -44,7 +44,7 @@ RUN apt-get update && apt-get install -yq --no-install-recommends \
     rm -rf /var/lib/apt/lists/*
 
 # R packages
-RUN conda install -y --name pytorch-py$PYTHON_VERSION -c r \
+RUN conda install -y -c r \
     r-base \
     r-irkernel \
     r-devtools \

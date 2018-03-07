@@ -10,5 +10,5 @@ docker run --rm -ti --ipc=host \
     -v /allen/aics/modeling/gregj/results:/root/data \
     -v /allen/aics:/root/aics \
     rorydm/pytorch_extras:${TAG} \
-    bash -c "jupyter notebook --allow-root --NotebookApp.iopub_data_rate_limit=10000000000"
+    bash -c "jupyter lab --allow-root --NotebookApp.iopub_data_rate_limit=10000000000"
 

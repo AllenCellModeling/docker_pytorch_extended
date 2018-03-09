@@ -10,6 +10,8 @@ RUN /opt/conda/bin/conda install -c conda-forge -y \
     jupyter \
     jupyterlab \
     jupyter_contrib_nbextensions \
+    ipywidgets \
+    nodejs \
     natsort \
     matplotlib \
     scikit-learn \
@@ -42,6 +44,7 @@ RUN git clone https://github.com/AllenCellModeling/pytorch_learning_tools.git /o
 
 # Set up notebook config
 COPY jupyter_notebook_config.py /root/.jupyter/
+RUN jupyter labextension install @jupyter-widgets/jupyterlab-manager
 
 # set matplitlib backend
 RUN mkdir -p /root/.config/matplotlib/ && echo 'backend : agg' > /root/.config/matplotlib/matplotlibrc

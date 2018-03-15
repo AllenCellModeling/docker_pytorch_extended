@@ -6,7 +6,7 @@ FROM rorydm/pytorch:master
 #   python: numpy pyyaml scipy ipython mkl
 
 # install more python stuff
-RUN /opt/conda/bin/conda install -c conda-forge -y \
+RUN conda install -c conda-forge -y \
     jupyter \
     jupyterlab \
     jupyter_contrib_nbextensions \
@@ -18,13 +18,20 @@ RUN /opt/conda/bin/conda install -c conda-forge -y \
     scikit-image \
     pandas \
     xlrd \
-    h5py \
     tqdm \
     seaborn \
     yapf \
     fire \
-    py-xgboost && \
-    conda clean -tipsy
+    && conda clean -tipsy
+
+# pip install since conda version out of date
+RUN pip install tensorflow tensorboard
+
+# pip install since conda version downgrades numpy which breaks pytorch
+RUN pip install h5py
+
+# add tensorboardx from source
+RUN pip install git+https://github.com/lanpa/tensorboard-pytorch
 
 # add our aicsimage repo
 RUN git clone https://github.com/AllenCellModeling/aicsimage.git /opt/aicsimage && \
@@ -51,6 +58,7 @@ RUN mkdir -p /root/.config/matplotlib/ && echo 'backend : agg' > /root/.config/m
 
 # expose port for ipython (9999)
 EXPOSE 9999
+EXPOSE 6006
 
 # move to home dir for root
 WORKDIR "/root" 

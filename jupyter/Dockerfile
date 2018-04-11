@@ -4,6 +4,8 @@ FROM rorydm/pytorch:master
 # pytorch image comes with:
 #   ubuntu: build-essential cmake git curl vim ca-certificates libjpeg-dev libpng-dev
 #   python: numpy pyyaml scipy ipython mkl
+RUN apt-get update
+RUN apt-get install texlive-xetex pandoc -y
 
 # install more python stuff
 RUN conda install -c conda-forge -y \

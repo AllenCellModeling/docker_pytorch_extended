@@ -5,33 +5,39 @@ FROM rorydm/pytorch:master
 #   ubuntu: build-essential cmake git curl vim ca-certificates libjpeg-dev libpng-dev
 #   python: numpy pyyaml scipy ipython mkl
 
-# install more python stuff
+# install more python stuff -- basics like jupyter, i/o, numerics, scikits, plotting
 RUN conda install -c conda-forge -y \
+    numba \
+    natsort \
+    pandas \
+    scikit-learn \
+    scikit-image \
     jupyter \
     jupyterlab \
     ipywidgets \
     nodejs \
-    natsort \
     matplotlib \
-    scikit-learn \
-    scikit-image \
-    pandas \
-    xlrd \
-    tqdm \
     seaborn \
     bokeh \
+    ipympl \
+    xlrd \
+    tqdm \
     yapf \
-    fire \
-    numba \
+    fire
+
+# install more specialized libraries
+RUN conda install -c conda-forge -y \
     umap-learn \
     python-igraph \
     louvain \
-    ipympl \
     glmnet \
     && conda clean -tipsy
 
 # datashader plotting
-conda install -c bokeh datashader
+RUN conda install -c bokeh datashader
+
+# tensor comprehensions
+RUN conda install -c tensorcomp tensor_comprehensions
 
 # pip install since conda version out of date
 RUN pip install tensorflow tensorboard

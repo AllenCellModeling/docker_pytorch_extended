@@ -41,3 +41,6 @@ Creates a docker image for running PyTorch on NVIDIA GPUs with Jupyter notebook 
 
 - To enter the running docker container:
   - `docker exec -it <container_name> bash`
+
+Note: the terminal inside docker sometimes acts funny. using the following seems to help:
+- `docker exec -t <container_name> /bin/bash -c "export COLUMNS=`tput cols`; export LINES=`tput lines`; exec bash"`

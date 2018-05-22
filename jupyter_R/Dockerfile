@@ -3,19 +3,16 @@ FROM rorydm/pytorch_extras:jupyter
 
 # pre-reqs for base notebooks from jupyter-stacks
 ENV export DEBIAN_FRONTEND=noninteractive
-RUN apt-get update && apt-get -yq dist-upgrade && \
-    apt-get install -yq --no-install-recommends \
+RUN apt-get update && apt-get install -yq --no-install-recommends \
     wget \
     bzip2 \
     sudo \
     locales \
     tzdata \
-    fonts-liberation && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+    fonts-liberation
 
 # all OS dependencies for fully functional notebook server from jupyter-stacks
-RUN apt-get update && apt-get install -yq --no-install-recommends \
+RUN apt-get install -yq --no-install-recommends \
     emacs \
     inkscape \
     jed \
@@ -31,17 +28,13 @@ RUN apt-get update && apt-get install -yq --no-install-recommends \
     texlive-latex-base \
     texlive-latex-extra \
     texlive-xetex \
-    unzip && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+    unzip
 
 # R pre-requisites from jupyter-stacks
-RUN apt-get update && apt-get install -yq --no-install-recommends \
+RUN apt-get install -yq --no-install-recommends \
     fonts-dejavu \
     gfortran \
-    gcc && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+    gcc
 
 # R packages
 RUN conda install -y -c r \
@@ -55,4 +48,11 @@ RUN conda install -y -c r \
     r-gplots \
     r-rcolorbrewer && \
     conda clean -tipsy
+
+# R-python interface
+RUN conda install -y rpy2 && \
+    conda clean -tipsy
+
+# bioconductor and packages
+RUN Rscript -e 'source("http://bioconductor.org/biocLite.R")' -e 'biocLite("splatter")'
 

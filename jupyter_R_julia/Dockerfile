@@ -1,6 +1,9 @@
 # From pytorch compiled from source
 FROM rorydm/pytorch_extras:jupyter_R
 
+RUN apt-get install -yq --no-install-recommends \
+    hdf5-tools
+
 # Julia install
 RUN conda install -c conda-forge julia
 

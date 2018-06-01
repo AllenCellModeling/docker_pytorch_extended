@@ -39,7 +39,61 @@ RUN conda install -c conda-forge -y \
 RUN conda install -c bokeh datashader
 
 # tensor comprehensions
-RUN conda install -c tensorcomp tensor_comprehensions
+RUN apt-get update && \
+    apt-get install -y \
+    libgoogle-glog-dev \
+    curl \
+    build-essential \
+    cmake \
+    git \
+    automake \
+    libgmp3-dev \
+    libtool \
+    ssh \
+    libyaml-dev \
+    realpath \
+    wget \
+    valgrind \
+    software-properties-common \
+    unzip \
+    libz-dev \
+    libxml2-dev
+
+ENV CC=/usr/bin/gcc \
+    CXX=/usr/bin/g++ \
+    CORES=64 \
+    LLVM_SOURCES=$HOME/llvm_sources-tapir5.0 \
+    CLANG_PREFIX=$HOME/clang+llvm-tapir5.0 \
+    CMAKE_VERSION=cmake
+
+RUN mkdir -p $LLVM_SOURCES && cd $LLVM_SOURCES && \
+    git clone --recursive https://github.com/wsmoses/Tapir-LLVM llvm && \
+    mkdir -p ${LLVM_SOURCES}/llvm_build && cd ${LLVM_SOURCES}/llvm_build
+
+RUN cd ${LLVM_SOURCES}/llvm_build && \
+    ${CMAKE_VERSION} -DLLVM_ENABLE_EH=ON -DLLVM_ENABLE_OCAMLDOC=OFF -DLLVM_INSTALL_OCAMLDOC_HTML_DIR=/tmp -DLLVM_OCAML_INSTALL_PATH=/tmp -DCMAKE_INSTALL_PREFIX=${CLANG_PREFIX} -DLLVM_TARGETS_TO_BUILD=X86 -DCOMPILER_RT_BUILD_CILKTOOLS=OFF -DLLVM_ENABLE_CXX1Y=ON -DLLVM_ENABLE_TERMINFO=OFF -DLLVM_BUILD_TESTS=OFF -DLLVM_ENABLE_ASSERTIONS=ON -DCMAKE_BUILD_TYPE=Release -DLLVM_BUILD_LLVM_DYLIB=ON  -DLLVM_ENABLE_RTTI=ON ../llvm/
+RUN cd ${LLVM_SOURCES}/llvm_build && \
+    make -j $CORES -s && make install -j $CORES -s
+RUN cd $HOME && rm -rf $LLVM_SOURCES
+RUN ln -s /clang+llvm-tapir5.0/bin/llvm-config /usr/local/bin/llvm-config
+
+ENV LD_LIBRARY_PATH=/usr/local/cuda/lib64:/usr/local/cuda/targets/x86_64-linux/lib/stubs/:$LD_LIBRARY_PATH
+ENV PATH=/usr/local/bin:/usr/local/cuda/bin:$PATH
+
+RUN mkdir -p /tmp/proto-install && \
+    cd /tmp/proto-install && \
+    wget --quiet https://github.com/google/protobuf/archive/v3.4.0.zip -O proto.zip && \
+    unzip -qq proto.zip -d . && \
+    cd protobuf-3.4.0 && \
+    ./autogen.sh && ./configure && make -j 8 && make install && ldconfig
+
+RUN git clone https://github.com/facebookresearch/TensorComprehensions.git --recursive /opt/TensorComprehensions && \
+    cd /opt/TensorComprehensions && \
+    git submodule update --init --recursive
+ENV TC_DIR='/opt/TensorComprehensions'
+
+RUN cd /opt/TensorComprehensions && \
+    BUILD_TYPE=Release INSTALL_PREFIX=$CONDA_PREFIX WITH_CAFFE2=OFF CLANG_PREFIX=$(llvm-config --prefix) ./build.sh --all
 
 # pip install since conda version out of date
 RUN pip install tensorflow tensorboard
